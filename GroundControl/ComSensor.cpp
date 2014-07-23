@@ -22,7 +22,7 @@ namespace GroundControl
 
 	void ComSensor::quit()
 	{
-		m_com.closePort();
+		m_com.closePort(); // close com port
 	}
 
 	void ComSensor::registerSensorCallback(ComSensorCallback callback, void* param)

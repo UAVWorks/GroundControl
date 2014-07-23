@@ -17,7 +17,7 @@ namespace GroundControl
 
 	int ComSensor::init(int port, int baudrate)
 	{
-		return m_com.openPort(port, baudrate, 8, 0, 1);
+		return m_com.openPort(port, baudrate, 8, 0, 1); // open port 
 	}
 
 	void ComSensor::quit()

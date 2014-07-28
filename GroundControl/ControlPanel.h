@@ -1,5 +1,6 @@
 #pragma once
 #include "MouseControlPanel.h"
+#include "ControlInterface.h"
 #include <vector>
 
 using namespace std;
@@ -32,8 +33,9 @@ private:
 	vector<GroundControl::Node*> m_nodelist;
 
 	CMouseControlPanel m_mouseControlPanel;
-
 	GroundControl::Node* m_curnode;
+
+	ControlInterface* m_curController;
 	
 
 public:
@@ -44,7 +46,8 @@ public:
 	afx_msg void OnGoBackwardBtnClicked();
 	afx_msg void OnGoLeftBtnClicked();
 	afx_msg void OnGoRightBtnClicked();
-
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+		
 
 
 };

@@ -31,7 +31,7 @@ bool mouseFlag = false;
 
 IMPLEMENT_DYNAMIC(CMouseControlPanel, CWnd)
 
-CMouseControlPanel::CMouseControlPanel() : m_curnode(NULL)
+CMouseControlPanel::CMouseControlPanel() 
 {
 
 }
@@ -46,7 +46,6 @@ BEGIN_MESSAGE_MAP(CMouseControlPanel, CWnd)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
-	ON_WM_TIMER()
 	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
@@ -151,11 +150,26 @@ void CMouseControlPanel::OnLButtonUp(UINT nFlags, CPoint point)
 }
 
 
-void CMouseControlPanel::OnTimer(UINT_PTR nIDEvent)
+
+
+
+
+
+int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	   
-	CWnd::OnTimer(nIDEvent);
+	if (CWnd::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+
+
+	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
+
+	return 0;
+}
+
+
+void CMouseControlPanel::update()
+{
 
 	if (mouseFlag == true)
 	{
@@ -191,41 +205,14 @@ void CMouseControlPanel::OnTimer(UINT_PTR nIDEvent)
 			curPoint.y = curPoint.y + ((errPoint.y / abs_errPoint) * MOUSE_STEP);
 		}
 	}
-	
-	//byte* Cdata = new byte[4];
 
-	byte Cdata[4];
-
-	short LCommand = -5 * curPoint.y + 1000;
-	short ACommand = -(5 * curPoint.x - 1000);
-
-	memcpy(Cdata, &LCommand, 2);
-	memcpy(Cdata + 2, &ACommand, 2);
-		
-	if (m_curnode)
-	{
-		GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, Cdata, 4);
-		m_curnode->sendCommand(&cmd);
-	}
-	
 	Invalidate();
+
 }
 
-
-void CMouseControlPanel::SetCurrentControlNode(GroundControl::Node* node)
+void CMouseControlPanel::getCommand(short& linear, short& angular)
 {
-	m_curnode = node;
-}
+	linear = -5 * curPoint.y + 1000;
+	angular = -(5 * curPoint.x - 1000);
 
-
-int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
-	if (CWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
-	SetTimer(2001, 50, NULL);
-
-	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
-
-	return 0;
 }

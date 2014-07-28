@@ -4,7 +4,7 @@
 	</info_source>
 	<node name = "chaser" >
 		<sensor type = "0" source = "0" />
-		<UDP port = "5150" remote_addr = "192.168.0.4" remote_port = "6150" /> 
+		<UDP port = "5150" remote_addr = "127.0.0.1" remote_port = "6150" /> 
 	</node>
 	<node name = "Rover">
 		<sensor type = "0" source = "0" />

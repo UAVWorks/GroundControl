@@ -54,13 +54,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Vicon\DataStream SDK\Win32\CPP;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Vicon\DataStream SDK\Win32\CPP;..\..\include;$(DXSDK_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Vicon\DataStream SDK\Win32\CPP;..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ViconDataStreamSDK_CPP.lib; libexpat.lib;kai_12d.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Vicon\DataStream SDK\Win32\CPP;..\..\lib;$(DXSDK_DIR)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ViconDataStreamSDK_CPP.lib; libexpat.lib;kai_12d.lib;xinput.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -109,6 +109,7 @@
   <ItemGroup>
     <ClInclude Include="ComDriver.h" />
     <ClInclude Include="Command.h" />
+    <ClInclude Include="ControlInterface.h" />
     <ClInclude Include="ControlPanel.h" />
     <ClInclude Include="MemDC.h" />
     <ClInclude Include="Message.h" />
@@ -133,9 +134,11 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Tranceiver.h" />
     <ClInclude Include="ViconMotionCapture.h" />
+    <ClInclude Include="XboxJoystick.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComDriver.cpp" />
+    <ClCompile Include="ControlInterface.cpp" />
     <ClCompile Include="ControlPanel.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="ComSensor.cpp" />
@@ -160,6 +163,7 @@
     </ClCompile>
     <ClCompile Include="Tranceiver.cpp" />
     <ClCompile Include="ViconMotionCapture.cpp" />
+    <ClCompile Include="XboxJoystick.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GroundControl.rc" />

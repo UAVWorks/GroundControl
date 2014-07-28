@@ -5,10 +5,10 @@
 #include "GroundControl.h"
 #include "MouseControlPanel.h"
 #include "Command.h"
+#include "MemDC.h"
 #include "GroundControl.h"
 #include "ControlPanel.h"
 #include "Message.h"
-#include "MemDC.h"
 #include "Node.h"
 #include <list>
 #include "SystemManager.h"
@@ -18,8 +18,12 @@
 #define MOUSE_PANEL_WIDTH 400
 #define MOUSE_PANEL_HEIGHT 400
 #define MAX_DRAW_POINT 50
+#define MOUSE_STEP 20
 
 CPoint centerPoint(MOUSE_PANEL_WIDTH/2, MOUSE_PANEL_HEIGHT/2);
+CPoint curPoint(centerPoint); // Mouse current Point (moving point)
+CPoint desPoint(centerPoint); // Mouse desired Point
+CPoint errPoint(0,0);
 
 bool mouseFlag = false;
 
@@ -44,7 +48,6 @@ BEGIN_MESSAGE_MAP(CMouseControlPanel, CWnd)
 	ON_WM_LBUTTONUP()
 	ON_WM_TIMER()
 	ON_WM_CREATE()
-	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -61,40 +64,44 @@ void CMouseControlPanel::OnPaint()
 	// 그리기 메시지에 대해서는 CStatic::OnPaint()을(를) 호출하지 마십시오.
 
 	CCustomMemDC memdc(&dc);
-	RECT rect;
-	GetClientRect(&rect);
-
-
 
 	CPen pen;
 	pen.CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
 
 	CPen* oldpen = memdc.SelectObject(&pen);
-	
+
 	memdc.MoveTo(CPoint(MOUSE_PANEL_WIDTH / 2, 0));
 	memdc.LineTo(CPoint(MOUSE_PANEL_WIDTH / 2, MOUSE_PANEL_HEIGHT));
 	memdc.MoveTo(CPoint(0, MOUSE_PANEL_HEIGHT / 2));
 	memdc.LineTo(CPoint(MOUSE_PANEL_WIDTH, MOUSE_PANEL_HEIGHT / 2));
 	/***********************************************************************/
 
-	memdc.draw
+	/*	CPen pen1;
+		pen1.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 
-	CPen pen1;
-	pen1.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+		CPen* oldpen1 = dc.SelectObject(&pen1);
 
-	CPen* oldpen1 = memdc.SelectObject(&pen1);
+		if (mouseFlag == true)
+		{
+		dc.MoveTo(CPoint(centerPoint));
+		dc.LineTo(CPoint(movingPoint.x, movingPoint.y));
+
+		}
+		*/
+
+	CPen pen2;
+	pen2.CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
+	CPen* oldpen2 = memdc.SelectObject(&pen2);
 	
 	if (mouseFlag == true)
 	{
-	
-		memdc.MoveTo(CPoint(centerPoint));
-		memdc.LineTo(CPoint(movingPoint.x, movingPoint.y));
-
+		memdc.Ellipse(movingPoint.x - 5, movingPoint.y - 5, movingPoint.x + 5, movingPoint.y + 5);
 	}
-	
-/*	dc.SelectObject(&oldpen1);
-	dc.DeleteDC();
-	pen1.DeleteObject();*/
+
+	CPen pen3;
+	pen3.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+	CPen* oldpen3 = memdc.SelectObject(&pen3);
+	memdc.Ellipse(curPoint.x-5, curPoint.y-5, curPoint.x + 5, curPoint.y + 5);
 
 }
 
@@ -106,19 +113,6 @@ void CMouseControlPanel::OnLButtonDown(UINT nFlags, CPoint point)
 	CWnd::OnLButtonDown(nFlags, point);
 
 	mouseFlag = true;
-	
-
-/*	CString text;
-	text.Format(_T("x:%d, y:%d"), point.x, point.y);
-	AfxMessageBox(text);*/
-
-/*	if (m_curnode)
-	{
-		GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, NULL, 0);
-		m_curnode->sendCommand(&cmd);
-	}*/
-
-
 }
 
 
@@ -128,24 +122,21 @@ void CMouseControlPanel::OnMouseMove(UINT nFlags, CPoint point)
 
 	CWnd::OnMouseMove(nFlags, point);
 
-	int LCommand = -5 * point.y + 1000;
-	int ACommand = 5 * point.x - 1000;
-
 	movingPoint = point;
 
-	CString text;
-	text.Format(_T("x:%d, y:%d\n L:%d, A:%d"), point.x, point.y, LCommand, ACommand);
+//	CString text;
+//	text.Format(_T("x:%d, y:%d\n L:%d, A:%d"), point.x, point.y, LCommand, ACommand);
 	
-	if (mouseFlag == true)
+/*	if (mouseFlag == true)
 	{
-		//AfxMessageBox(text);
+		AfxMessageBox(text);
 	}
 
 	if (m_curnode)
 	{
 		GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, NULL, 0);
 		m_curnode->sendCommand(&cmd);
-	}
+	}*/
 }
 
 
@@ -155,29 +146,65 @@ void CMouseControlPanel::OnLButtonUp(UINT nFlags, CPoint point)
 
 	CWnd::OnLButtonUp(nFlags, point);
 
-	//KillTimer(2001);
-
 	mouseFlag = false;
 
-	if (m_curnode)
-	{
-		GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, NULL, 0);
-		m_curnode->sendCommand(&cmd);
-	}
 }
 
 
 void CMouseControlPanel::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
+	   
 	CWnd::OnTimer(nIDEvent);
-	RECT rect;
-//	GetWindowRect(&rect);
-//	InvalidateRect(&rect);
 
+	if (mouseFlag == true)
+	{
+		desPoint = movingPoint;
+		errPoint = (desPoint - curPoint);
+		float abs_errPoint = sqrt(pow(errPoint.x, 2) + pow(errPoint.y, 2));
+		if (abs_errPoint <= MOUSE_STEP)
+		{
+			curPoint.x = desPoint.x;
+			curPoint.y = desPoint.y;
+		}
+		else
+		{
+			curPoint.x = curPoint.x + ((errPoint.x / abs_errPoint) * MOUSE_STEP);
+			curPoint.y = curPoint.y + ((errPoint.y / abs_errPoint) * MOUSE_STEP);
+		}
+	}
+
+	if (mouseFlag != true && curPoint != centerPoint)
+	{
+		desPoint = centerPoint;
+		errPoint = (desPoint - curPoint);
+		float abs_errPoint = sqrt(pow(errPoint.x, 2) + pow(errPoint.y, 2));
+		if (abs_errPoint <= MOUSE_STEP)
+		{
+			curPoint.x = desPoint.x;
+			curPoint.y = desPoint.y;
+		}
+		else
+		{
+			curPoint.x = curPoint.x + ((errPoint.x / abs_errPoint) * MOUSE_STEP);
+			curPoint.y = curPoint.y + ((errPoint.y / abs_errPoint) * MOUSE_STEP);
+		}
+	}
+	
+	byte* Cdata = new byte[4];
+	int LCommand = -5 * curPoint.y + 1000;
+	int ACommand = 5 * curPoint.x - 1000;
+	int LAC = LCommand * 1000 + ACommand;
+
+	if (m_curnode)
+	{
+		GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, Cdata, 0);
+		m_curnode->sendCommand(&cmd);
+	}
+	
 	Invalidate();
 }
+
 
 
 int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -185,18 +212,18 @@ int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	SetTimer(2001, 100, NULL);
+	SetTimer(2001, 50, NULL);
 
 	// TODO:  여기에 특수화된 작성 코드를 추가합니다.
 
 	return 0;
 }
 
-
-BOOL CMouseControlPanel::OnEraseBkgnd(CDC* pDC)
+/*
+void int2Byte(int value, byte data[], int idx)
 {
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
-	return CWnd::OnEraseBkgnd(pDC);
-	//return TRUE;
-}
+	data[idx] = (byte)(value >> 24);
+	data[++idx] = (byte)(value >> 16);
+	data[++idx] = (byte)(value >> 8);
+	data[++idx] = (byte)value;
+}*/

@@ -178,6 +178,7 @@ void CMouseControlPanel::OnTimer(UINT_PTR nIDEvent)
 	{
 		desPoint = centerPoint;
 		errPoint = (desPoint - curPoint);
+
 		float abs_errPoint = sqrt(pow(errPoint.x, 2) + pow(errPoint.y, 2));
 		if (abs_errPoint <= MOUSE_STEP)
 		{
@@ -191,14 +192,19 @@ void CMouseControlPanel::OnTimer(UINT_PTR nIDEvent)
 		}
 	}
 	
-	byte* Cdata = new byte[4];
-	int LCommand = -5 * curPoint.y + 1000;
-	int ACommand = 5 * curPoint.x - 1000;
-	int LAC = LCommand * 1000 + ACommand;
+	//byte* Cdata = new byte[4];
 
+	byte Cdata[4];
+
+	short LCommand = -5 * curPoint.y + 1000;
+	short ACommand = 5 * curPoint.x - 1000;
+
+	memcpy(Cdata, &LCommand, 2);
+	memcpy(Cdata + 2, &ACommand, 2);
+		
 	if (m_curnode)
 	{
-		GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, Cdata, 0);
+		GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, Cdata, 4);
 		m_curnode->sendCommand(&cmd);
 	}
 	
@@ -218,12 +224,3 @@ int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	return 0;
 }
-
-/*
-void int2Byte(int value, byte data[], int idx)
-{
-	data[idx] = (byte)(value >> 24);
-	data[++idx] = (byte)(value >> 16);
-	data[++idx] = (byte)(value >> 8);
-	data[++idx] = (byte)value;
-}*/

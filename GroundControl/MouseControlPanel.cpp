@@ -18,7 +18,7 @@
 #define MOUSE_PANEL_WIDTH 400
 #define MOUSE_PANEL_HEIGHT 400
 #define MAX_DRAW_POINT 50
-#define MOUSE_STEP 20
+#define MOUSE_STEP 10
 
 CPoint centerPoint(MOUSE_PANEL_WIDTH/2, MOUSE_PANEL_HEIGHT/2);
 CPoint curPoint(centerPoint); // Mouse current Point (moving point)
@@ -31,7 +31,7 @@ bool mouseFlag = false;
 
 IMPLEMENT_DYNAMIC(CMouseControlPanel, CWnd)
 
-CMouseControlPanel::CMouseControlPanel()
+CMouseControlPanel::CMouseControlPanel() : m_curnode(NULL)
 {
 
 }
@@ -197,7 +197,7 @@ void CMouseControlPanel::OnTimer(UINT_PTR nIDEvent)
 	byte Cdata[4];
 
 	short LCommand = -5 * curPoint.y + 1000;
-	short ACommand = 5 * curPoint.x - 1000;
+	short ACommand = -(5 * curPoint.x - 1000);
 
 	memcpy(Cdata, &LCommand, 2);
 	memcpy(Cdata + 2, &ACommand, 2);
@@ -211,6 +211,11 @@ void CMouseControlPanel::OnTimer(UINT_PTR nIDEvent)
 	Invalidate();
 }
 
+
+void CMouseControlPanel::SetCurrentControlNode(GroundControl::Node* node)
+{
+	m_curnode = node;
+}
 
 
 int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)

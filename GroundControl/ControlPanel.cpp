@@ -83,6 +83,7 @@ int CControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		{
 			rButton->SetCheck(BST_CHECKED);
 			m_curnode = node;
+
 		}
 		else
 		{
@@ -100,7 +101,7 @@ int CControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_goRightBtn.Create(_T("¿ìÈ¸Àü"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, CRect(rect.left + 210, rect.top + 200, rect.left + 210 + BUTTON_SIZE_X, rect.top +200 + BUTTON_SIZE_Y), this, ID_GO_RIGHT_BTN);
 
 	m_mouseControlPanel.Create( NULL, NULL, WS_CHILD | WS_VISIBLE | SS_NOTIFY | WS_BORDER, CRect(rect.left + 310, rect.top + 0, rect.left + 310 + 400, rect.top + 0 + 400), this, ID_MOUSE_CONTROL_PANEL);
-	
+	m_mouseControlPanel.SetCurrentControlNode(m_curnode);
 	return 0;
 }
 
@@ -174,6 +175,7 @@ void CControlPanel::OnFirstRadioBtnClicked()
 
 	m_nodelistBtn[0]->SetCheck(BST_CHECKED);
 	m_curnode = m_nodelist[0];
+	m_mouseControlPanel.SetCurrentControlNode(m_curnode);
 
 }
 
@@ -191,4 +193,5 @@ void CControlPanel::OnSecondRadioBtnClicked()
 
 	m_nodelistBtn[1]->SetCheck(BST_CHECKED);
 	m_curnode = m_nodelist[1];
+	m_mouseControlPanel.SetCurrentControlNode(m_curnode);
 }

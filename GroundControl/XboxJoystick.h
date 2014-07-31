@@ -9,7 +9,7 @@
 #define X_BUTTON 0x4000
 #define Y_BUTTON 0x8000 
 
-class XboxJoystick
+class XboxJoystick 
 {
 public:
 	XboxJoystick();

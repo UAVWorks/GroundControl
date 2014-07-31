@@ -150,11 +150,6 @@ void CMouseControlPanel::OnLButtonUp(UINT nFlags, CPoint point)
 }
 
 
-
-
-
-
-
 int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
@@ -214,5 +209,4 @@ void CMouseControlPanel::getCommand(short& linear, short& angular)
 {
 	linear = -5 * curPoint.y + 1000;
 	angular = -(5 * curPoint.x - 1000);
-
 }

@@ -17,6 +17,7 @@
 #define ID_GO_RIGHT_BTN (ID_GO_FORWARD_BTN+4)
 #define ID_NODE_LIST_BTN_BASE 1030
 #define ID_MOUSE_CONTROL_PANEL 1031
+#define ID_CONTROLLER_BTN_BASE 1040
 
 #define BUTTON_SIZE_X 80 
 #define BUTTON_SIZE_Y 80
@@ -48,6 +49,9 @@ BEGIN_MESSAGE_MAP(CControlPanel, CStatic)
 	ON_BN_CLICKED(ID_GO_RIGHT_BTN, &CControlPanel::OnGoRightBtnClicked)
 	ON_BN_CLICKED(ID_NODE_LIST_BTN_BASE, &CControlPanel::OnFirstRadioBtnClicked)
 	ON_BN_CLICKED(ID_NODE_LIST_BTN_BASE + 1, &CControlPanel::OnSecondRadioBtnClicked)
+	ON_BN_CLICKED(ID_CONTROLLER_BTN_BASE, &CControlPanel::OnThirdRadioBtnClicked)
+	ON_BN_CLICKED(ID_CONTROLLER_BTN_BASE + 1, &CControlPanel::OnForthRadioBtnClicked)
+	ON_BN_CLICKED(ID_CONTROLLER_BTN_BASE + 2, &CControlPanel::OnFifthRadioBtnClicked)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
@@ -94,6 +98,12 @@ int CControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		idx++;
 	}
 
+	m_rnoneBtn.Create(_T("None"), WS_CHILD | WS_VISIBLE | BS_RADIOBUTTON, CRect(rect.left + 160, rect.top + 20, rect.left + 160 + 100, rect.top + 20 + 20), this, ID_CONTROLLER_BTN_BASE);
+	m_rmouseBtn.Create(_T("Mouse"), WS_CHILD | WS_VISIBLE | BS_RADIOBUTTON, CRect(rect.left + 160, rect.top + 40, rect.left + 160 + 100, rect.top + 40 + 20), this, ID_CONTROLLER_BTN_BASE+1);
+	m_rjoystickBtn.Create(_T("Joystick"), WS_CHILD | WS_VISIBLE | BS_RADIOBUTTON, CRect(rect.left + 160, rect.top + 60, rect.left + 160 + 100, rect.top + 60 + 20), this, ID_CONTROLLER_BTN_BASE+2);
+	m_rnoneBtn.SetCheck(BST_UNCHECKED);
+	m_rmouseBtn.SetCheck(BST_CHECKED);
+	m_rjoystickBtn.SetCheck(BST_UNCHECKED);
 
 	m_goForwardBtn.Create(_T("전진"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, CRect(rect.left + 110, rect.top + 100, rect.left + 110 + BUTTON_SIZE_X, rect.top + 100 + BUTTON_SIZE_Y), this, ID_GO_FORWARD_BTN);
 	m_stopBtn.Create(_T("정지"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, CRect(rect.left + 110, rect.top + 200, rect.left + 110 + BUTTON_SIZE_X, rect.top + 200 + BUTTON_SIZE_Y), this, ID_STOP_BTN);
@@ -199,6 +209,36 @@ void CControlPanel::OnSecondRadioBtnClicked()
 	m_curnode = m_nodelist[1];
 }
 
+void CControlPanel::OnThirdRadioBtnClicked()
+{
+	//AfxMessageBox(_T("clicked"));
+
+	m_rnoneBtn.SetCheck(BST_CHECKED);
+	m_rmouseBtn.SetCheck(BST_UNCHECKED);
+	m_rjoystickBtn.SetCheck(BST_UNCHECKED);
+	m_curController = NULL; // None
+}
+
+void CControlPanel::OnForthRadioBtnClicked()
+{
+	//AfxMessageBox(_T("clicked"));
+
+	m_rnoneBtn.SetCheck(BST_UNCHECKED);
+	m_rmouseBtn.SetCheck(BST_CHECKED);
+	m_rjoystickBtn.SetCheck(BST_UNCHECKED);
+	m_curController = &m_mouseControlPanel; // mouse
+}
+
+void CControlPanel::OnFifthRadioBtnClicked()
+{
+	//AfxMessageBox(_T("clicked"));
+
+	m_rnoneBtn.SetCheck(BST_UNCHECKED);
+	m_rmouseBtn.SetCheck(BST_UNCHECKED);
+	m_rjoystickBtn.SetCheck(BST_CHECKED);
+	m_curController = &m_joystickControl; //joystick
+}
+
 void CControlPanel::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -218,9 +258,6 @@ void CControlPanel::OnTimer(UINT_PTR nIDEvent)
 			GroundControl::GeneralMessage cmd(TURTLEBOT_MSG_MOVE, data, 4);
 			m_curnode->sendCommand(&cmd);
 		}
-
-
 	}
-
 	CStatic::OnTimer(nIDEvent);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "MouseControlPanel.h"
 #include "ControlInterface.h"
+#include "JoystickControl.h"
 #include <vector>
 
 using namespace std;
@@ -29,6 +30,11 @@ private:
 	CButton m_goBackwardBtn;
 	CButton m_goLeftBtn;
 	CButton m_goRightBtn;
+
+	CButton m_rnoneBtn;
+	CButton m_rmouseBtn;
+	CButton m_rjoystickBtn;
+
 	vector<CButton*> m_nodelistBtn;
 	vector<GroundControl::Node*> m_nodelist;
 
@@ -36,12 +42,17 @@ private:
 	GroundControl::Node* m_curnode;
 
 	ControlInterface* m_curController;
+
+	CJoystickControl m_joystickControl;
 	
 
 public:
 	afx_msg void OnGoForwardBtnClicked();
 	afx_msg void OnFirstRadioBtnClicked();
 	afx_msg void OnSecondRadioBtnClicked();
+	afx_msg void OnThirdRadioBtnClicked();
+	afx_msg void OnForthRadioBtnClicked();
+	afx_msg void OnFifthRadioBtnClicked();
 	afx_msg void OnStopBtnClicked();
 	afx_msg void OnGoBackwardBtnClicked();
 	afx_msg void OnGoLeftBtnClicked();

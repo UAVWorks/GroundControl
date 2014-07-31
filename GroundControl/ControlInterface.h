@@ -1,4 +1,5 @@
 #pragma once
+
 class ControlInterface
 {
 public:
@@ -7,5 +8,8 @@ public:
 
 	virtual void update() = 0;
 	virtual void getCommand(short& linear, short& angular) = 0;
+
+private:
+
 };
 

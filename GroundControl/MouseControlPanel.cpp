@@ -31,7 +31,7 @@ bool mouseFlag = false;
 
 IMPLEMENT_DYNAMIC(CMouseControlPanel, CWnd)
 
-CMouseControlPanel::CMouseControlPanel() 
+CMouseControlPanel::CMouseControlPanel() : m_rateLimiter(MOUSE_STEP, Eigen::Vector2f(centerPoint.x, centerPoint.y))
 {
 
 }
@@ -166,47 +166,24 @@ int CMouseControlPanel::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CMouseControlPanel::update()
 {
 
-	if (mouseFlag == true)
+	Eigen::Vector2f desired(movingPoint.x, movingPoint.y);
+
+	if (!mouseFlag)
 	{
-		desPoint = movingPoint;
-		errPoint = (desPoint - curPoint);
-		float abs_errPoint = sqrt(pow(errPoint.x, 2) + pow(errPoint.y, 2));
-		if (abs_errPoint <= MOUSE_STEP)
-		{
-			curPoint.x = desPoint.x;
-			curPoint.y = desPoint.y;
-		}
-		else
-		{
-			curPoint.x = curPoint.x + ((errPoint.x / abs_errPoint) * MOUSE_STEP);
-			curPoint.y = curPoint.y + ((errPoint.y / abs_errPoint) * MOUSE_STEP);
-		}
+		desired[0] = centerPoint.x;
+		desired[1] = centerPoint.y;
 	}
 
-	if (mouseFlag != true && curPoint != centerPoint)
-	{
-		desPoint = centerPoint;
-		errPoint = (desPoint - curPoint);
+	Eigen::Vector2f val = m_rateLimiter(desired);
 
-		float abs_errPoint = sqrt(pow(errPoint.x, 2) + pow(errPoint.y, 2));
-		if (abs_errPoint <= MOUSE_STEP)
-		{
-			curPoint.x = desPoint.x;
-			curPoint.y = desPoint.y;
-		}
-		else
-		{
-			curPoint.x = curPoint.x + ((errPoint.x / abs_errPoint) * MOUSE_STEP);
-			curPoint.y = curPoint.y + ((errPoint.y / abs_errPoint) * MOUSE_STEP);
-		}
-	}
-
+	curPoint.x = val[0];
+	curPoint.y = val[1];
 	Invalidate();
 
 }
 
 void CMouseControlPanel::getCommand(short& linear, short& angular)
 {
-	linear = -5 * curPoint.y + 1000;
+	linear = (-5 * curPoint.y + 1000)/2;
 	angular = -(5 * curPoint.x - 1000);
 }

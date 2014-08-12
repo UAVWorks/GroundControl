@@ -1,4 +1,5 @@
 #pragma once
+#include "RateLimiter.h"
 #include "ControlInterface.h"
 
 
@@ -17,6 +18,7 @@ protected:
 
 private:
 	CPoint movingPoint;
+	RateLimiter m_rateLimiter;
 
 public:
 	afx_msg void OnPaint();

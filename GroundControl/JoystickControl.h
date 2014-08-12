@@ -1,5 +1,6 @@
 #pragma once
 #include "ControlInterface.h"
+#include "RateLimiter.h"
 #include "XboxJoystick.h"
 
 class CJoystickControl : public ControlInterface
@@ -15,6 +16,7 @@ public:
 private:
 	XboxJoystick m_xboxJoyStick;
 	bool m_bJoystickFlag;
+	RateLimiter m_rateLimiter;
 
 };
 

@@ -124,6 +124,9 @@ int ComDriver::setCommTimeouts(int portNum, int readTimeout, int writeTimeout)
 	if (!ready) {
 		return M3D_COMM_FAILED;
 	}
+
+	int a = 0;
+
 	timeOuts.ReadIntervalTimeout = readTimeout;
 	timeOuts.ReadTotalTimeoutConstant = readTimeout;
 	timeOuts.ReadTotalTimeoutMultiplier = 10;
@@ -135,6 +138,8 @@ int ComDriver::setCommTimeouts(int portNum, int readTimeout, int writeTimeout)
 	}
 	else
 		return M3D_COMM_OK;
+
+
 }
 
 
